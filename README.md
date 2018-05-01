@@ -23,7 +23,6 @@ pip3 install selenium
 Creo que deberían ser los mísmos pasos que en linux, pero no aseguro nada.
 
 ## Uso:
-### Linux:
 Abrir una terminal en el directorio dónde clonaste el proyecto y escribir según necesites.
 - #### Ver horario del día:
 ```terminal
