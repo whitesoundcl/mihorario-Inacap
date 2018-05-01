@@ -16,7 +16,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.by import By
 
 archivo_cache = 'cache.json'
-
+geckodriver = os.path.dirname(os.path.abspath(__file__)) + "/geckodriver"
 
 # -----Funciones-----#
 
@@ -25,8 +25,7 @@ def recargar_cache():
     print("Actualizando caché de horario, por favor espera..")
     options = Options()
     options.add_argument("--headless") # Comenta esta linea para iniciar el navegador con GUI
-    driver = webdriver.Firefox(firefox_options=options, executable_path=os.path.dirname(os.path.abspath(__file__)) +
-                                                                        "/geckodriver")
+    driver = webdriver.Firefox(firefox_options=options, executable_path=geckodriver)
     driver.get(
         "https://adfs.inacap.cl/adfs/ls/?wtrealm=https://siga.inacap.cl/sts/&wa=wsignin1.0&wreply=https://siga.inacap"
         ".cl/sts/&wctx=https%3a%2f%2fadfs.inacap.cl%2fadfs%2fls%2f%3fwreply%3dhttps%3a%2f%2fwww.inacap.cl%2ftportalvp"
