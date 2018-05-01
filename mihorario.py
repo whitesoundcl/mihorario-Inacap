@@ -76,12 +76,13 @@ def recargar_cache():
     driver.get("https://siga3.inacap.cl/Inacap.Siga.Horarios/Horario.aspx/ValidaSesion?" + codigo_sesion)
     salir = False
     while salir:
+        # Se espera hasta que la página con la información del semestre cargue completamente.
         try:
             print("Esperando página con resultados")
             WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.ID, "form1")))
             salir = True
         except:
-            print("Error?")
+            print(".")
 
     json_string = "".join(re.findall('\/\/<!\[CDATA\[\n.+\/\/]]>', driver.page_source, re.MULTILINE))
 
