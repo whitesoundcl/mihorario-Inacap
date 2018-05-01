@@ -34,7 +34,7 @@ La primera vez que ejecutes este comando se te pedirán tus credenciales de INAC
 ```terminal
 python3 mihorario.py
 ```
-No es necesario recargar el cache del horario del semestre a cada rato, con tal de que se haga de vez en cuando basta y sobra. Si te quedas con el mismo cache durante mucho tiempo, y te actualizaron el horario (Cancelación de clases, cambio de aula, etc) no verás estos cambios en el programa.
+No es necesario recargar el cache del horario del semestre a cada rato, con tal de que se haga de vez en cuando basta y sobra. Si te quedas con el mismo cache durante mucho tiempo, y te actualizaron el horario (Cancelación de clases, cambio de aula, etc) no verás estos cambios en el programa. En un intel pentium del año del que no se dice, tarda unos 59 segundos en actualizarse.
 - #### Ver horario en 7 días:
 ```terminal
 python3 mihorario.py -s
