@@ -21,8 +21,7 @@ pip3 install selenium
 - Debes descargar la última versión de [geckodriver](https://github.com/mozilla/geckodriver/releases) correspondiente con tu sistema operativo y arquitectura, para luego extraerlo en la carpeta raíz del proyecto.
 ### Mac OS:
 Creo que deberían ser los mísmos pasos que en linux, pero no aseguro nada.
-### Windows: 
-Algún día
+
 ## Uso:
 ### Linux:
 Abrir una terminal en el directorio dónde clonaste el proyecto y escribir según necesites.
