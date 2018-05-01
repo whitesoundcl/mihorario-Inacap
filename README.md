@@ -1,7 +1,7 @@
 # mihorario-Inacap
 Imprime tu horario de clases del día en la terminal. La gracia es que puedes ver tu horario incluso cuando estás offline, desde la comodidad de tu terminal.
 
-# Este proyecto no es un proyecto oficial de INACAP y solo debe ser utilizado para fines educativos.
+# Este no es un proyecto oficial de INACAP y solo debe ser utilizado para fines educativos.
 (o para ver tu horario de vez en cuando =) ).
 
 ## Dependencias:
