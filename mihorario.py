@@ -38,7 +38,7 @@ def esperar_web(driver,  intentos, condicion, nombre, mensaje):
 def recargar_cache():
     print("Actualizando caché de horario, por favor espera..")
     options = Options()
-    #options.add_argument("--headless")  # Comenta esta linea para iniciar el navegador con GUI
+    options.add_argument("--headless")  # Comenta esta linea para iniciar el navegador con GUI
     driver = webdriver.Firefox(firefox_options=options, executable_path=geckodriver)
     driver.get(
         "https://adfs.inacap.cl/adfs/ls/?wtrealm=https://siga.inacap.cl/sts/&wa=wsignin1.0&wreply=https://siga.inacap"
@@ -108,11 +108,22 @@ def recargar_cache():
 def mostrar_horario(dias):
     json_cargado = json.load(open(archivo_cache))
     dias = int(dias)
+    
     # En caso de que el usuario ingrese un número negativo
     fecha = date.today() if dias > 0 else date.today() - timedelta(days=abs(dias))
     fecha_limite = fecha + timedelta(days=dias) if dias > 0 else date.today()
 
+    # Imprimir horario
     for horario in json_cargado:
+        # Imprimir días feriados
+        if horario["description"] == "Feriado":
+            spl_asignatura = list(map(int, str(horario["data"]["fecha"]).split("/")))
+            fecha_asignatura = date(spl_asignatura[2], spl_asignatura[1], spl_asignatura[0])
+
+            if fecha <= fecha_asignatura < fecha_limite:
+                print("[{fecha}] FERIADO".format(fecha=horario["data"]["fecha"]))
+
+        # Imprimir el horario de las clases
         if "hora_inicio" in horario["data"]:
             spl_asignatura = list(map(int, str(horario["data"]["fecha"]).split("/")))
             fecha_asignatura = date(spl_asignatura[2], spl_asignatura[1], spl_asignatura[0])
@@ -131,7 +142,7 @@ def mostrar_horario_completo():
     json_cargado = json.load(open(archivo_cache))
     for horario in json_cargado:
         if "hora_inicio" in horario["data"]:
-            print("{fecha} {nombre} de {inicio} a {termino} en {sala}".format(
+            print("[{fecha}] {nombre} de {inicio} a {termino} en {sala}".format(
                 fecha=horario["data"]["fecha"],
                 nombre=horario["data"]["asignatura"],
                 inicio=horario["data"]["hora_inicio"],
