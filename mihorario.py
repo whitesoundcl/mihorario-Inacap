@@ -106,27 +106,28 @@ def recargar_cache():
 
 
 def mostrar_horario(dias):
+    
     json_cargado = json.load(open(archivo_cache))
     dias = int(dias)
-    
+
     # En caso de que el usuario ingrese un número negativo
     fecha = date.today() if dias > 0 else date.today() - timedelta(days=abs(dias))
     fecha_limite = fecha + timedelta(days=dias) if dias > 0 else date.today()
 
     # Imprimir horario
     for horario in json_cargado:
+        # Split del string de fecha para transformarla en un objeto date
+        spl_asignatura = list(map(int, str(horario["data"]["fecha"]).split("/")))
+        fecha_asignatura = date(spl_asignatura[2], spl_asignatura[1], spl_asignatura[0])
+
         # Imprimir días feriados
         if horario["description"] == "Feriado":
-            spl_asignatura = list(map(int, str(horario["data"]["fecha"]).split("/")))
-            fecha_asignatura = date(spl_asignatura[2], spl_asignatura[1], spl_asignatura[0])
 
             if fecha <= fecha_asignatura < fecha_limite:
                 print("[{fecha}] FERIADO".format(fecha=horario["data"]["fecha"]))
 
         # Imprimir el horario de las clases
         if "hora_inicio" in horario["data"]:
-            spl_asignatura = list(map(int, str(horario["data"]["fecha"]).split("/")))
-            fecha_asignatura = date(spl_asignatura[2], spl_asignatura[1], spl_asignatura[0])
 
             if fecha <= fecha_asignatura < fecha_limite:
                 print("[{fecha}] {nombre} de {inicio} a {termino} en {sala}".format(
