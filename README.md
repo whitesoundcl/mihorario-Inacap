@@ -6,6 +6,7 @@ Imprime tu horario de clases del día en la terminal. La gracia es que puedes ve
 
 ## Dependencias:
 - Selenium 
+- Navegador Firefox
 - [última versión de GECKODRIVER para tu arquitectura y SO](https://github.com/mozilla/geckodriver/releases)
 
 ## Instalación:
