@@ -18,13 +18,27 @@ from selenium.webdriver.common.by import By
 archivo_cache = 'cache.json'
 geckodriver = os.path.dirname(os.path.abspath(__file__)) + "/geckodriver"
 
+
 # -----Funciones-----#
+
+def esperar_web(driver,  intentos, condicion, nombre, mensaje):
+    contador = 0
+    while contador < intentos:
+        try:
+            WebDriverWait(driver, 15).until(
+                EC.presence_of_element_located((condicion, nombre)))
+            return True
+        except:
+            print(mensaje)
+
+        contador += 1
+    return False
 
 
 def recargar_cache():
     print("Actualizando caché de horario, por favor espera..")
     options = Options()
-    options.add_argument("--headless") # Comenta esta linea para iniciar el navegador con GUI
+    options.add_argument("--headless")  # Comenta esta linea para iniciar el navegador con GUI
     driver = webdriver.Firefox(firefox_options=options, executable_path=geckodriver)
     driver.get(
         "https://adfs.inacap.cl/adfs/ls/?wtrealm=https://siga.inacap.cl/sts/&wa=wsignin1.0&wreply=https://siga.inacap"
@@ -45,43 +59,30 @@ def recargar_cache():
     start = time.time()
 
     # Espera por el ambiente alumno
-    try:
-        print("Esperando el ambiente alumno")
-        elemento = WebDriverWait(driver, 15).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "aplicacionesAlumno")))
-        print("Ambiente alumno cargado.")
-    except:
-        print("La pagina ha tardado mucho en responder..\n¿Contraseña correcta? ¿Hay conexión a internet?")
+    if not esperar_web(driver, 5, By.CLASS_NAME, "aplicacionesAlumno", "."):
+        print("La página está tardando en responder. ¿Credenciales de alumno correctas?")
         driver.close()
-        exit(1)
+        exit(-1)
 
     driver.get(
         "https://www.inacap.cl/tportalvp/procesar_link.php?idc=MISASIGNAT&url=https://siga3.inacap.cl/Inacap.Siga"
         ".Horarios/Horario.aspx "
     )
-    salir = False
-    # intentos = 5
-    while not salir:
-        try:
-            # La primera vez siempre va a fallar por que todavía está cargado el DOM anterior
-            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.ID, "frmhorario")))
-            salir = True
-        except Exception as e:
-            print(".")
+    
+    if not esperar_web(driver, 5, By.ID, "frmhorario", "."):
+        print("La página no responde, intentalo de nuevo más tarde.")
+        driver.close()
+        exit(-1)
 
     # Se obtiene el código de la sesión
     codigo_sesion = "".join(re.findall('SESI_CCOD=\w+', driver.current_url, re.I))
 
     driver.get("https://siga3.inacap.cl/Inacap.Siga.Horarios/Horario.aspx/ValidaSesion?" + codigo_sesion)
-    salir = False
-    while salir:
-        # Se espera hasta que la página con la información del semestre cargue completamente.
-        try:
-            print("Esperando página con resultados")
-            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.ID, "form1")))
-            salir = True
-        except:
-            print(".")
+
+    if not esperar_web(driver, 5, By.ID, "form1", "."):
+        print("La página está tardando en responder, intentalo más tarde.")
+        driver.close()
+        exit(-1)
 
     json_string = "".join(re.findall('\/\/<!\[CDATA\[\n.+\/\/]]>', driver.page_source, re.MULTILINE))
 
