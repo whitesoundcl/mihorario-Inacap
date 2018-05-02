@@ -15,12 +15,18 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.by import By
 
+
+# -- Variables ----#
 archivo_cache = 'cache.json'
 geckodriver = os.path.dirname(os.path.abspath(__file__)) + "/geckodriver"
+url_login_inacap = "https://adfs.inacap.cl/adfs/ls/?wtrealm=https://siga.inacap.cl/sts/&wa=wsignin1.0&wreply=https" \
+                   "://siga.inacap.cl/sts/&wctx=https%3a%2f%2fadfs.inacap.cl%2fadfs%2fls%2f%3fwreply%3dhttps%3a%2f" \
+                   "%2fwww.inacap.cl%2ftportalvp%2fintranet-alumno%26wtrealm%3dhttps%3a%2f%2fwww.inacap.cl%2f "
+url_inacap_horario = "https://www.inacap.cl/tportalvp/procesar_link.php?idc=MISASIGNAT&url=https://siga3.inacap.cl" \
+                     "/Inacap.Siga.Horarios/Horario.aspx "
 
 
 # -----Funciones-----#
-
 def esperar_web(driver,  intentos, condicion, nombre, mensaje):
     contador = 0
     while contador < intentos:
@@ -40,10 +46,7 @@ def recargar_cache():
     options = Options()
     options.add_argument("--headless")  # Comenta esta linea para iniciar el navegador con GUI
     driver = webdriver.Firefox(firefox_options=options, executable_path=geckodriver)
-    driver.get(
-        "https://adfs.inacap.cl/adfs/ls/?wtrealm=https://siga.inacap.cl/sts/&wa=wsignin1.0&wreply=https://siga.inacap"
-        ".cl/sts/&wctx=https%3a%2f%2fadfs.inacap.cl%2fadfs%2fls%2f%3fwreply%3dhttps%3a%2f%2fwww.inacap.cl%2ftportalvp"
-        "%2fintranet-alumno%26wtrealm%3dhttps%3a%2f%2fwww.inacap.cl%2f")
+    driver.get(url_login_inacap)
 
     assert "Sign In" in driver.title
     # Ingresa los datos en los formularios
@@ -64,10 +67,7 @@ def recargar_cache():
         driver.close()
         exit(-1)
 
-    driver.get(
-        "https://www.inacap.cl/tportalvp/procesar_link.php?idc=MISASIGNAT&url=https://siga3.inacap.cl/Inacap.Siga"
-        ".Horarios/Horario.aspx "
-    )
+    driver.get(url_inacap_horario)
 
     # Espera por la página del horario:
     if not esperar_web(driver, 5, By.ID, "frmhorario", "."):
@@ -106,7 +106,7 @@ def recargar_cache():
 
 
 def mostrar_horario(dias):
-    
+
     json_cargado = json.load(open(archivo_cache))
     dias = int(dias)
 
