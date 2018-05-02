@@ -142,6 +142,9 @@ def mostrar_horario(dias):
 def mostrar_horario_completo():
     json_cargado = json.load(open(archivo_cache))
     for horario in json_cargado:
+        if horario["description"] == "Feriado":
+            print("[{fecha}] FERIADO".format(fecha=horario["data"]["fecha"]))
+
         if "hora_inicio" in horario["data"]:
             print("[{fecha}] {nombre} de {inicio} a {termino} en {sala}".format(
                 fecha=horario["data"]["fecha"],
