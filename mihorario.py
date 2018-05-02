@@ -38,7 +38,7 @@ def esperar_web(driver,  intentos, condicion, nombre, mensaje):
 def recargar_cache():
     print("Actualizando caché de horario, por favor espera..")
     options = Options()
-    options.add_argument("--headless")  # Comenta esta linea para iniciar el navegador con GUI
+    #options.add_argument("--headless")  # Comenta esta linea para iniciar el navegador con GUI
     driver = webdriver.Firefox(firefox_options=options, executable_path=geckodriver)
     driver.get(
         "https://adfs.inacap.cl/adfs/ls/?wtrealm=https://siga.inacap.cl/sts/&wa=wsignin1.0&wreply=https://siga.inacap"
@@ -68,22 +68,14 @@ def recargar_cache():
         "https://www.inacap.cl/tportalvp/procesar_link.php?idc=MISASIGNAT&url=https://siga3.inacap.cl/Inacap.Siga"
         ".Horarios/Horario.aspx "
     )
-    
+
+    # Espera por la página del horario:
     if not esperar_web(driver, 5, By.ID, "frmhorario", "."):
         print("La página no responde, intentalo de nuevo más tarde.")
         driver.close()
         exit(-1)
 
-    # Se obtiene el código de la sesión
-    codigo_sesion = "".join(re.findall('SESI_CCOD=\w+', driver.current_url, re.I))
-
-    driver.get("https://siga3.inacap.cl/Inacap.Siga.Horarios/Horario.aspx/ValidaSesion?" + codigo_sesion)
-
-    if not esperar_web(driver, 5, By.ID, "form1", "."):
-        print("La página está tardando en responder, intentalo más tarde.")
-        driver.close()
-        exit(-1)
-
+    # Se roba el horario contenido en el json en la página
     json_string = "".join(re.findall('\/\/<!\[CDATA\[\n.+\/\/]]>', driver.page_source, re.MULTILINE))
 
     # Ya no se necesita que el driver mantenga abierto el navegador
@@ -91,11 +83,13 @@ def recargar_cache():
 
     print("Limpiando información de horario (Esto suele tardar un poco)")
 
+    # Se limpia el string para pasarlo a un formato json válido.
     regex_borrar_comienzo = r"\b.+,events:"
     regex_borrar_final = r",eventRender:.+"
 
     match = re.findall(regex_borrar_comienzo, json_string, re.IGNORECASE)
     json_string = json_string.replace("".join(match), "")
+
     match = re.findall(regex_borrar_final, json_string, re.IGNORECASE)
     json_string = json_string.replace("".join(match), "")
     json_string = json_string.replace("//<![CDATA[\n", "")
@@ -168,8 +162,10 @@ elif args.semana:
 
 elif args.dias is not None:
     mostrar_horario(args.dias)
+
 elif args.todos:
     mostrar_horario_completo()
+
 else:
     mostrar_horario(1)
 
