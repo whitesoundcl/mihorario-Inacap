@@ -12,7 +12,7 @@ La gracia es que puedes ver tu horario incluso cuando estás offline, desde la c
 - [última versión de GECKODRIVER para tu arquitectura y SO](https://github.com/mozilla/geckodriver/releases)
 
 ## Instalación:
-### Linux (Probado en una distro basada en UBUNTU):
+### Linux (Probado en una distro basada en UBUNTU y en ArchLinux):
 - Primero debes clonar este repositorio en el directorio que desees utilizando la terminal:
 ```terminal
 git clone https://github.com/whitesoundcl/mihorario-Inacap.git
@@ -49,4 +49,9 @@ Funciona tanto para ver el horario de los días anteriores (número negativo), c
 - #### Ver todo el horario del semestre:
 ```terminal
 python3 mihorario.py -t
+```
+- #### Ver horario resumido en una línea:
+Útil si se desea imprimir el horario en algún widget
+```terminal
+python3 mihorario.py -l
 ```
