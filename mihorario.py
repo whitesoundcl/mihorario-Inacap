@@ -7,7 +7,7 @@ import json
 import re
 import time
 import argparse
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options
@@ -41,7 +41,7 @@ def esperar_web(driver,  intentos, condicion, nombre, mensaje):
     return False
 
 
-def recargar_cache():
+def actualizar_cache():
     print("Actualizando caché de horario, por favor espera..")
     options = Options()
     options.add_argument("--headless")  # Comenta esta linea para iniciar el navegador con GUI
@@ -78,7 +78,6 @@ def recargar_cache():
     # Se roba el horario contenido en el json en la página
     json_string = "".join(re.findall('\/\/<!\[CDATA\[\n.+\/\/]]>', driver.page_source, re.MULTILINE))
 
-    # Ya no se necesita que el driver mantenga abierto el navegador
     driver.close()
 
     print("Limpiando información de horario (Esto suele tardar un poco)")
@@ -94,10 +93,8 @@ def recargar_cache():
     json_string = json_string.replace("".join(match), "")
     json_string = json_string.replace("//<![CDATA[\n", "")
 
-    # Se carga el string con formato json para posteriormente guardarlo.
     json_cargado = json.loads(json_string)
 
-    # Guardar el horario en 'cache.json'
     with open(archivo_cache, 'w') as outfile:
         json.dump(json_cargado, outfile)
 
@@ -105,42 +102,46 @@ def recargar_cache():
     print("Cache actualizado en " + str(time.time() - start) + " Segundos.")
 
 
-def mostrar_horario(dias):
-
+def mostrar_horario(dias, una_linea):
     json_cargado = json.load(open(archivo_cache))
-    dias = int(dias)
 
-    # En caso de que el usuario ingrese un número negativo
-    fecha = date.today() if dias > 0 else date.today() - timedelta(days=abs(dias))
-    fecha_limite = fecha + timedelta(days=dias) if dias > 0 else date.today()
+    fecha = fecha_limite = date.today()
+    if dias <= 0:
+        fecha = fecha - timedelta(days=abs(dias))
+    else:
+        fecha_limite = fecha + timedelta(days=dias)
 
-    # Imprimir horario
     for horario in json_cargado:
-        # Split del string de fecha para transformarla en un objeto date
-        spl_asignatura = list(map(int, str(horario["data"]["fecha"]).split("/")))
-        fecha_asignatura = date(spl_asignatura[2], spl_asignatura[1], spl_asignatura[0])
+        fecha_asignatura = datetime.strptime(horario["data"]["fecha"], '%d/%m/%Y').date()
 
-        # Imprimir días feriados
         if horario["description"] == "Feriado":
-
             if fecha <= fecha_asignatura < fecha_limite:
                 print("[{fecha}] FERIADO".format(fecha=horario["data"]["fecha"]))
 
-        # Imprimir el horario de las clases
         if "hora_inicio" in horario["data"]:
-
             if fecha <= fecha_asignatura < fecha_limite:
-                print("[{fecha}] {nombre} de {inicio} a {termino} en {sala}".format(
-                    fecha=horario["data"]["fecha"],
-                    nombre=horario["data"]["asignatura"],
-                    inicio=horario["data"]["hora_inicio"],
-                    termino=horario["data"]["hora_termino"],
-                    sala=horario["data"]["sala"]
-                ))
+                if una_linea:
+                    nombre_asignatura = horario["data"]["asignatura"]
+                    if len(nombre_asignatura) > 15:
+                        nombre_asignatura = str(nombre_asignatura[0:15] + "..")
+                    print("[ {nombre_asignatura} | {hora_inicio} | {sala} ]  ".format(
+                        hora_inicio=horario["data"]["hora_inicio"],
+                        nombre_asignatura=nombre_asignatura,
+                        sala=horario["data"]["sala"]
+                    ), end='')
+                else:
+                    print("[{fecha}] {nombre_asignatura} de {hora_inicio} a {hora_termino} en {sala}".format(
+                        fecha=horario["data"]["fecha"],
+                        nombre_asignatura=horario["data"]["asignatura"],
+                        hora_inicio=horario["data"]["hora_inicio"],
+                        hora_termino=horario["data"]["hora_termino"],
+                        sala=horario["data"]["sala"]
+                    ))
 
 
 def mostrar_horario_completo():
     json_cargado = json.load(open(archivo_cache))
+
     for horario in json_cargado:
         if horario["description"] == "Feriado":
             print("[{fecha}] FERIADO".format(fecha=horario["data"]["fecha"]))
@@ -165,23 +166,27 @@ grupo.add_argument('-a', '--actualizar', help='Renueva el cache del horario', ac
 grupo.add_argument('-s', '--semana', help='Muestra el horario en los siguientes 7 días', action='store_true')
 grupo.add_argument('-d', '--dias', help='Muestra el horario en los siguientes N días', metavar="N")
 grupo.add_argument('-t', '--todos', help='Muestra todo el horario', action='store_true')
+grupo.add_argument('-l', '--linea', help='Muestra el horario del día en una sola linea', action="store_true")
 
 args = parser.parse_args()
 
 # Si el archivo de caché no existe al iniciar el programa, se intentará obtener.
 if args.actualizar or not os.path.isfile(archivo_cache):
-    recargar_cache()
+    actualizar_cache()
 
 elif args.semana:
     mostrar_horario(7)
 
 elif args.dias is not None:
-    mostrar_horario(args.dias)
+    mostrar_horario(int(args.dias), False)
 
 elif args.todos:
     mostrar_horario_completo()
 
+elif args.linea:
+    mostrar_horario(1, True)
+
 else:
-    mostrar_horario(1)
+    mostrar_horario(1, False)
 
 exit(0)
