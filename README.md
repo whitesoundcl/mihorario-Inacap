@@ -3,6 +3,7 @@ Imprime tu horario de clases del día en la terminal. Tambien puedes conocer que
 <br>
 La gracia es que puedes ver tu horario incluso cuando estás offline, desde la comodidad de una consola.
 
+![alt text](https://raw.githubusercontent.com/whitesoundcl/mihorario-inacap/master/terminal.png)
 # Este no es un proyecto oficial de INACAP y solo debe ser utilizado para fines educativos.
 (o para ver tu horario de vez en cuando =) ).
 
@@ -55,3 +56,12 @@ python3 mihorario.py -t
 ```terminal
 python3 mihorario.py -l
 ```
+### Widget
+He creado un pequeño script (mihorario-wid.py) que solo muestra la sala en la que deberías estar como en el siguiente ejemplo:
+```terminal
+[507] 
+```
+Lo cual lo hace ideal para insertarlo en un widget en la barra de tareas.<br>
+![alt text](https://raw.githubusercontent.com/whitesoundcl/mihorario-inacap/master/widget.png)
+<br>(
+Nota: para que funcione debes haber actualizado el caché del horario con mihorario.py)
