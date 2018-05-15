@@ -4,6 +4,7 @@
 import os.path
 import getpass
 import json
+import pathlib
 import re
 import time
 import argparse
@@ -18,6 +19,7 @@ from selenium.webdriver.common.by import By
 
 # -- Variables ----#
 archivo_cache = 'cache.json'
+ruta_cache = os.getenv("HOME") + '/.cache/mihorario/'
 geckodriver = os.path.dirname(os.path.abspath(__file__)) + "/geckodriver"
 url_login_inacap = "https://adfs.inacap.cl/adfs/ls/?wtrealm=https://siga.inacap.cl/sts/&wa=wsignin1.0&wreply=https" \
                    "://siga.inacap.cl/sts/&wctx=https%3a%2f%2fadfs.inacap.cl%2fadfs%2fls%2f%3fwreply%3dhttps%3a%2f" \
@@ -43,6 +45,10 @@ def esperar_web(driver,  intentos, condicion, nombre, mensaje):
 
 def actualizar_cache():
     print("Actualizando caché de horario, por favor espera..")
+    if not os.path.exists(ruta_cache):
+        pathlib.Path(ruta_cache).mkdir(parents=True, exist_ok=True)
+
+
     options = Options()
     options.add_argument("--headless")  # Comenta esta linea para iniciar el navegador con GUI
     driver = webdriver.Firefox(firefox_options=options, executable_path=geckodriver)
@@ -95,7 +101,7 @@ def actualizar_cache():
 
     json_cargado = json.loads(json_string)
 
-    with open(archivo_cache, 'w') as outfile:
+    with open(ruta_cache + archivo_cache, 'w') as outfile:
         json.dump(json_cargado, outfile)
 
     # Imprimir el tiempo total que costó realizar la operacion.
@@ -103,7 +109,7 @@ def actualizar_cache():
 
 
 def mostrar_horario(dias, una_linea):
-    json_cargado = json.load(open(archivo_cache))
+    json_cargado = json.load(open(ruta_cache + archivo_cache))
 
     fecha = fecha_limite = date.today()
     if dias <= 0:
@@ -127,7 +133,7 @@ def mostrar_horario(dias, una_linea):
                     print("[ {nombre_asignatura} | {hora_inicio} | {sala} ]  ".format(
                         hora_inicio=horario["data"]["hora_inicio"],
                         nombre_asignatura=nombre_asignatura,
-                        sala=horario["data"]["sala"]
+                        sala=horario["data"]["sala"][len(horario["data"]["sala"])-3:]
                     ), end='')
                 else:
                     print("[{fecha}] {nombre_asignatura} de {hora_inicio} a {hora_termino} en {sala}".format(
@@ -140,7 +146,7 @@ def mostrar_horario(dias, una_linea):
 
 
 def mostrar_horario_completo():
-    json_cargado = json.load(open(archivo_cache))
+    json_cargado = json.load(open(ruta_cache + archivo_cache))
 
     for horario in json_cargado:
         if horario["description"] == "Feriado":
@@ -171,7 +177,7 @@ grupo.add_argument('-l', '--linea', help='Muestra el horario del día en una sol
 args = parser.parse_args()
 
 # Si el archivo de caché no existe al iniciar el programa, se intentará obtener.
-if args.actualizar or not os.path.isfile(archivo_cache):
+if args.actualizar or not os.path.isfile(ruta_cache + archivo_cache):
     actualizar_cache()
 
 elif args.semana:
