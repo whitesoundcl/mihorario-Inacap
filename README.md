@@ -23,6 +23,23 @@ git clone https://github.com/whitesoundcl/mihorario-Inacap.git
 pip3 install selenium
 ```
 - Debes descargar la última versión de [geckodriver](https://github.com/mozilla/geckodriver/releases) correspondiente con tu sistema operativo y arquitectura, para luego extraerlo en la carpeta raíz del proyecto.
+
+- Crear un alias en .bashrc:
+<br>
+Concatenar al final de ~/.bashrc
+```terminal
+alias horario='python3 <Directorio donde clonaste este repositorio>/mihorario-Inacap/mihorario.py'
+```
+Por ejemplo:
+
+```terminal 
+alias horario='python3 $HOME/Programas/mihorario-inacap-github/mihorario.py'
+``` 
+Si no realizas este último paso, puedes continuar utilizando el programa de la siguiente forma: 
+(Ya estando en el directorio del proyecto)
+```terminal
+python3 mihorario.py
+```
 ### Mac OS:
 Creo que deberían ser los mísmos pasos que en linux, pero no aseguro nada.
 
@@ -30,31 +47,31 @@ Creo que deberían ser los mísmos pasos que en linux, pero no aseguro nada.
 Abrir una terminal en el directorio dónde clonaste el proyecto y escribir según necesites.
 - #### Ver horario del día:
 ```terminal
-python3 mihorario.py
+horario
 ```
 La primera vez que ejecutes este comando se te pedirán tus credenciales de INACAP para poder acceder a tu sesión de usuario y descargar el horario del semestre.
 - #### Refrescar cache de horario:
 ```terminal
-python3 mihorario.py -a
+horario -a
 ```
 No es necesario recargar el cache del horario del semestre a cada rato, con tal de que se haga de vez en cuando basta y sobra. Si te quedas con el mismo cache durante mucho tiempo, y te actualizaron el horario (Cancelación de clases, cambio de aula, etc) no verás estos cambios en el programa. En un intel pentium del año del que no se dice, tarda unos 59 segundos en actualizarse.
 - #### Ver horario en 7 días:
 ```terminal
-python3 mihorario.py -s
+horario -s
 ```
 - #### Ver horario en N días:
 ```terminal
-python3 mihorario.py -d N
+horario -d N
 ```
 Funciona tanto para ver el horario de los días anteriores (número negativo), como para ver el horario de los días siguientes (número positivo).
 - #### Ver todo el horario del semestre:
 ```terminal
-python3 mihorario.py -t
+horario -t
 ```
 - #### Ver horario resumido en una línea:
 Útil si se desea imprimir el horario en algún widget
 ```terminal
-python3 mihorario.py -l
+horario -l
 ```
 ### Widget
 He creado un pequeño script (mihorario-wid.py) que solo muestra la sala en la que deberías estar como en el siguiente ejemplo:
