@@ -27,6 +27,7 @@ pip3 install selenium
 - Crear un alias en .bashrc:
 <br>
 Concatenar al final de ~/.bashrc
+
 ```terminal
 alias horario='python3 <Directorio donde clonaste este repositorio>/mihorario-Inacap/mihorario.py'
 ```
