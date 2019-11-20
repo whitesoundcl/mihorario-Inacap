@@ -1,3 +1,4 @@
+# Con la nueva actualización que inacap le dio a su sistema, lamentablemente este proyecto dejo de funcionar.
 # mihorario-Inacap
 Imprime tu horario de clases del día en la terminal. Tambien puedes conocer que días son feriados.
 <br>
